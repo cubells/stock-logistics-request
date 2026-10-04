@@ -15,24 +15,21 @@ class StockReturnRequestCase(TransactionCase):
         cls.prod_1 = cls.product_obj.create(
             {
                 "name": "Test Product 1",
-                "type": "consu",
-                "is_storable": True,
+                "type": "product",
                 "company_id": cls.company.id,
             }
         )
         cls.prod_2 = cls.product_obj.create(
             {
                 "name": "Test Product 2",
-                "type": "consu",
-                "is_storable": True,
+                "type": "product",
                 "company_id": cls.company.id,
             }
         )
         cls.prod_3 = cls.product_obj.create(
             {
                 "name": "Test Product 3",
-                "type": "consu",
-                "is_storable": True,
+                "type": "product",
                 "tracking": "lot",
                 "company_id": cls.company.id,
             }

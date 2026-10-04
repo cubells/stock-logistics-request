@@ -3,7 +3,7 @@
     <record id="view_stock_return_request_tree" model="ir.ui.view">
         <field name="model">stock.return.request</field>
         <field name="arch" type="xml">
-            <list
+            <tree
                 decoration-muted="state=='cancel'"
                 decoration-info="state=='draft'"
                 decoration-danger="state=='confirmed'"
@@ -25,10 +25,9 @@
                     invisible="not show_to_refund or return_type == 'internal'"
                 />
                 <field name="state" />
-            </list>
+            </tree>
         </field>
     </record>
-
     <record id="view_stock_return_request_form" model="ir.ui.view">
         <field name="model">stock.return.request</field>
         <field name="arch" type="xml">
@@ -162,10 +161,10 @@
                                         </page>
                                     </notebook>
                                 </form>
-                                <list editable="bottom">
+                                <tree editable="bottom">
                                     <field
                                         name="product_id"
-                                        context="{'default_is_storable': True}"
+                                        context="{'default_type': 'product'}"
                                     />
                                     <field
                                         name="product_uom_id"
@@ -189,7 +188,7 @@
                                     />
                                     <field name="quantity" />
                                     <field name="max_quantity" optional="hide" />
-                                </list>
+                                </tree>
                             </field>
                         </page>
                         <page string="Comments" name="return_comments">
@@ -204,14 +203,12 @@
             </form>
         </field>
     </record>
-
     <record id="action_stock_return_request_tree" model="ir.actions.act_window">
         <field name="name">Return Requests</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">stock.return.request</field>
         <field name="view_mode">list,form</field>
     </record>
-
     <menuitem
         action="action_stock_return_request_tree"
         id="menu_stock_return_request"

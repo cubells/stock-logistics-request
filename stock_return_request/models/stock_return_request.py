@@ -1,6 +1,6 @@
 # Copyright 2019 Tecnativa - David Vidal
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_is_zero, float_repr, format_datetime
 
@@ -12,8 +12,8 @@ class StockReturnRequest(models.Model):
     _order = "create_date desc"
 
     name = fields.Char(
-        "Reference",
-        default=lambda self: self.env._("New"),
+        string="Reference",
+        default=lambda self: _("New"),
         copy=False,
         readonly=True,
         required=True,
@@ -143,7 +143,7 @@ class StockReturnRequest(models.Model):
                 "move_line_ids": [(6, 0, moves.mapped("move_line_ids").ids)],
                 "picking_type_id": return_picking_type.id,
                 "state": "draft",
-                "origin": self.env._("Return of %s", picking_dict.get("origin")),
+                "origin": _("Return of %s", picking_dict.get("origin")),
                 "location_id": self.return_from_location.id,
                 "location_dest_id": self.return_to_location.id,
                 "stock_return_request_id": self.id,
@@ -220,7 +220,7 @@ class StockReturnRequest(models.Model):
         self.ensure_one()
         Quant = self.env["stock.quant"]
         if not self.line_ids:
-            raise ValidationError(self.env._("Add some products to return"))
+            raise ValidationError(_("Add some products to return"))
         returnable_moves = self.line_ids._get_returnable_move_ids()
         return_moves = self.env["stock.move"]
         failed_moves = []
@@ -303,7 +303,7 @@ class StockReturnRequest(models.Model):
                 ]
             )
             raise ValidationError(
-                self.env._(
+                _(
                     "It wasn't possible to assign stock for this returns:\n"
                     "{failed_moves_str}"
                 ).format(failed_moves_str=failed_moves_str)
@@ -345,17 +345,17 @@ class StockReturnRequest(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if not vals.get("name") or vals["name"] == self.env._("New"):
+            if not vals.get("name") or vals["name"] == _("New"):
                 vals["name"] = self.env["ir.sequence"].next_by_code(
                     "stock.return.request"
-                ) or self.env._("New")
+                ) or _("New")
         return super().create(vals)
 
     @api.ondelete(at_uninstall=False)
     def _must_delete_request(self):
         for record in self:
             if record.state == "done":
-                raise UserError(self.env._("You cannot delete this record."))
+                raise UserError(_("You cannot delete this record."))
 
     def action_view_pickings(self):
         """Display returned pickings"""
@@ -396,7 +396,7 @@ class StockReturnRequestLine(models.Model):
         comodel_name="product.product",
         string="Product",
         required=True,
-        domain=[("is_storable", "=", True)],
+        domain=[("type", "=", "product")],
     )
     product_uom_id = fields.Many2one(
         comodel_name="uom.uom",
@@ -514,7 +514,7 @@ class StockReturnRequestLine(models.Model):
             if qty_to_complete:
                 qty_found = line.quantity - qty_to_complete
                 raise ValidationError(
-                    self.env._(
+                    _(
                         "Not enough moves to return this product.\n"
                         "It wasn't possible to find enough moves to return "
                         "{line_quantity} {line_product_uom_id_name} "
@@ -557,7 +557,7 @@ class StockReturnRequestLine(models.Model):
             )
             if existing > 1:
                 raise UserError(
-                    self.env._(
+                    _(
                         "You cannot have two open Stock Return Requests with the same "
                         "product ({product_id}), locations ({return_from_location}, "
                         "{return_to_location}) partner ({partner_id}) and lot.\n"
@@ -635,7 +635,7 @@ class StockReturnRequestLine(models.Model):
         if vals_list:
             self.env["suggest.return.request.lot.line"].create(vals_list)
         return {
-            "name": self.env._("Suggest Lot"),
+            "name": _("Suggest Lot"),
             "type": "ir.actions.act_window",
             "res_model": "suggest.return.request.lot",
             "view_mode": "form",
